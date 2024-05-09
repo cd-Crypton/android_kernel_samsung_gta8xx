@@ -3849,7 +3849,17 @@ static int32_t __init nvt_driver_init(void)
 		return -ENODEV;
 	}
 	//---add spi driver---
-	ret = spi_register_driver(&nvt_spi_driver);
+	/* Tab A8 code for AX6300U-7 by tangzhen at 20230726 start */
+	if (saved_command_line && (strstr(saved_command_line, "androidboot.mode=normal") ||
+		strstr(saved_command_line, "androidboot.mode=autotest") ||
+		strstr(saved_command_line, "androidboot.mode=alarm"))) {
+		pr_err("it is normal mode\n");
+		ret = spi_register_driver(&nvt_spi_driver);
+	} else {
+		pr_err("it is not normal mode\n");
+		return -ENODEV;
+	}
+	/* Tab A8 code for AX6300U-7 by tangzhen at 20230726 end */
 	if (ret) {
 		pr_err("[sec_input] failed to add spi driver");
 		goto err_driver;
